@@ -1,0 +1,65 @@
+{
+    "name": "shipsaas/laravel-inbox-process",
+    "type": "library",
+    "version": "1.0.0",
+    "description": "Inbox pattern process implementation for your Laravel Applications",
+    "keywords": [
+        "laravel library",
+        "laravel inbox process",
+        "laravel inbox pattern",
+        "inbox pattern",
+        "webhook",
+        "inbox",
+        "inbox process",
+        "laravel"
+    ],
+    "authors": [
+        {
+            "name": "Phat Tran (Seth Phat)",
+            "email": "me@sethphat.com",
+            "homepage": "https://github.com/sethsandaru",
+            "role": "Sr.SWE"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^10|dev-master",
+        "ext-pcntl": "*"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^v1.20.0",
+        "mockery/mockery": "^1.5.1",
+        "phpunit/phpunit": "^10",
+        "orchestra/testbench": "^8",
+        "phpunit/php-code-coverage": "^10",
+        "friendsofphp/php-cs-fixer": "^3.10"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ShipSaasInboxProcess\\InboxProcessServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "ShipSaasInboxProcess\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ShipSaasInboxProcess\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test-coverage": [
+            "@php vendor/bin/phpunit --coverage-clover coverage.xml"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
