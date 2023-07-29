@@ -67,6 +67,8 @@ I had a real use case back then. The Payment entity status would be updated freq
 - `payment-sending-{paymentUuid}`
 - `payment-sent-{paymentUuid}`
 
+From DB: `UNIQUE(topic, external_id)`
+
 ## Receive Webhook Requests
 
 ### Use the default route
