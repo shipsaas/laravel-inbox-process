@@ -69,6 +69,14 @@ I had a real use case back then. The Payment entity status would be updated freq
 
 From DB: `UNIQUE(topic, external_id)`
 
+### Ordering
+
+To keep the ordering, we are using unix timestamp in milliseconds instead of normal datetime string.
+
+PROs:
+- Faster sorting & pulling the unresolved msgs
+- Keeping the correct order and won't mess things up in the "seconds"-level
+
 ## Receive Webhook Requests
 
 ### Use the default route
