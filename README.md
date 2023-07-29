@@ -35,8 +35,6 @@ php artisan vendor:publish --tag=laravel-inbox-process
 php artisan migrate
 ```
 
-## Usage
-
 ## Glossary
 
 ### Topic
@@ -136,10 +134,14 @@ public function webhook(WebhookRequest $request): JsonResponse
 }
 ```
 
+Note:
+if you need to know if duplicated record happens,
+check out our `[InboxController.php](./src/Http/Controllers/InboxController.php)`
+
 ## Create Inbox Processor / Handler
 
 Simply bind your own Handler class using `addProcessor` method. 
-If you add more than 1 processor, it will loop thru all the processors to process.
+You can add multiple processors, Inbox Process will loop through all of them and execute.
 
 ```php
 use ShipSaasInboxProcess\InboxProcessSetup;
@@ -185,6 +187,9 @@ php artisan inbox:work {topic} --limit=100
 
 Same as Laravel Queue Worker, you can set up the `supervisor` to manage the process.
 
+Note: use `numprocs=1` for each topic. We also add the locking mechanism, so you won't be able to dispatch
+multiple processes for a single topic.
+
 ## Notes
 
 ### Use Inbox Process when
@@ -192,13 +197,13 @@ Same as Laravel Queue Worker, you can set up the `supervisor` to manage the proc
 - Process your webhook requests **uniquely/exactly-once**.
 - Process your webhook requests **in ORDER**.
 - Your 3rd-party service doesn't want specific responses, simply `200` OK is enough
-  - eg: you have to run some biz logic then return the response.
+  - e.g.: you have to run some biz logic then return the response.
 
 ### Avoid using Inbox Process when
 - You don't care about the ordering of the webhook requests, can be YOLO-ordering 😌.
 - You have to do some biz logic then **specific responses** to your 3rd-party service.
   - For this, you might need to implement your own Idempotency layer.
-- You want high throughput
+- You want high throughput (use Queue then)
 
 ## Process until success
 If there is a message that fails to process (throwing an Exception). Inbox Process will stop and
