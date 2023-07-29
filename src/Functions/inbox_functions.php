@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
+use ShipSaasInboxProcess\Repositories\InboxMessageRepository;
 
 if (!function_exists('appendInboxMessage')) {
     /**
@@ -10,14 +10,14 @@ if (!function_exists('appendInboxMessage')) {
      * @param string $externalId the unique external id
      * @param array $payload the payload of message
      *
+     * @note You need to handle the exception by yourself, if you want to have some reference
+     * @see \ShipSaasInboxProcess\Http\Controllers\InboxController::handle()
+     *
      * @return void
      */
     function appendInboxMessage(string $topic, string $externalId, array $payload): void
     {
-        DB::table('inbox_messages')->insert([
-            'topic' => $topic,
-            'external_id' => $externalId,
-            'payload' => $payload,
-        ]);
+        app(InboxMessageRepository::class)
+            ->append($topic, $externalId, $payload);
     }
 }

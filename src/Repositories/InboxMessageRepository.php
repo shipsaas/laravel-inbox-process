@@ -8,6 +8,21 @@ use ShipSaasInboxProcess\Entities\InboxMessage;
 
 class InboxMessageRepository extends AbstractRepository
 {
+    public function append(string $topic, string $externalId, array $payload): void
+    {
+        $now = Carbon::now();
+
+        $this->makeDbClient()
+            ->table('inbox_messages')
+            ->insert([
+                'topic' => $topic,
+                'external_id' => $externalId,
+                'payload' => $payload,
+                'created_at' => $now->toDateTimeString(),
+                'created_at_unix_ms' => $now->getTimestampMs()
+            ]);
+    }
+
     /**
      * @return Collection<InboxMessage>
      */
@@ -17,7 +32,7 @@ class InboxMessageRepository extends AbstractRepository
             ->table('inbox_messages')
             ->whereNull('processed_at')
             ->where('topic', $topic)
-            ->orderBy('created_at', 'ASC')
+            ->orderBy('created_at_unix_ms', 'ASC')
             ->limit($limit)
             ->get(['id', 'payload'])
             ->map(fn (object $record) => InboxMessage::make($record));

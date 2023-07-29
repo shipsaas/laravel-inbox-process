@@ -12,9 +12,8 @@ return new class() extends Migration {
             $table->string('topic')->index();
             $table->string('external_id')->index();
             $table->jsonb('payload');
-            $table->timestamp('created_at')
-                ->default(DB::raw('CURRENT_TIMESTAMP'))
-                ->index();
+            $table->timestamp('created_at');
+            $table->bigInteger('created_at_unix_ms');
             $table->timestamp('processed_at')->nullable();
 
             $table->unique([
@@ -26,7 +25,7 @@ return new class() extends Migration {
         DB::statement('
             ALTER TABLE inbox_messages
                 ADD INDEX idx_inbox_pull_msgs
-                (topic, processed_at, created_at ASC);
+                (topic, processed_at, created_at_unix_ms ASC);
         ');
     }
 
