@@ -38,9 +38,9 @@ php artisan migrate
 ## Glossary
 
 ### Topic
-`topic`: the term topic is vague and really depend on your use cases.
+`topic`: is like a category to put the messages (grouping).
 
-For instance, you can use a single topic (using the 3rd service name) for everything.
+You can use a single topic (using the 3rd service name) for everything.
 
 Or you can use multiple topics as well if you are confidence that there won't be any conflicts.
 
@@ -48,6 +48,8 @@ Example:
 
 - `inbox/stripe`
 - `inbox/currency-cloud`
+- `inbox/stripe-invoice`
+- `inbox/stripe-payment`
 - ...
 
 ### Unique External Id
