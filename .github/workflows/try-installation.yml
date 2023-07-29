@@ -1,4 +1,4 @@
-name: Try Install Package (Laravel 9 & 10)
+name: Try Install Package (Laravel 10)
 env:
     LOCAL_ENV: ${{ secrets.LOCAL_ENV }}
 

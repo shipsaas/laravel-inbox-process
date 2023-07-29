@@ -1,4 +1,4 @@
-name: Build & Test (PHP 8.1, 8.2)
+name: Build & Test (PHP 8.2)
 env:
     TESTING_ENV: ${{ secrets.TESTING_ENV }}
 
@@ -16,7 +16,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                version: [ '8.1', '8.2' ]
+                version: [ '8.2' ]
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
@@ -33,9 +33,10 @@ jobs:
                 run: |
                     sudo service mysql start
                     php -v
-                    mysql -uroot -proot -e "CREATE DATABASE priority_queue;"
+                    mysql -uroot -proot -e "CREATE DATABASE inbox;"
                     composer install --no-interaction
                     echo "$TESTING_ENV" > .env.testing
+                    echo "$TESTING_ENV" > .env
 
             -   name: PHPUnit tests with coverage
                 if: success() && github.event.pull_request.draft == false
@@ -43,7 +44,7 @@ jobs:
                     composer test-coverage
 
             -   name: upload coverage to codecov.io
-                if: success() && matrix.version == '8.1'
+                if: success()
                 uses: codecov/codecov-action@v3
                 with:
                     token: ${{ secrets.CODECOV_TOKEN }}
