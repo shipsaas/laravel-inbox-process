@@ -54,7 +54,7 @@ Example:
 
 ### Unique External Id
 
-In order to ensure the msgs are unique, you must determine the unique external id.
+In order to ensure the msgs are unique, you must determine the unique external id **for each topic**.
 
 Something like: the unique ID of the 3rd-party entity. 
 
