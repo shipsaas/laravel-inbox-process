@@ -11,7 +11,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 #[AsCommand(name: 'inbox:work')]
 class InboxWorkCommand extends Command
 {
-    protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5}';
+    protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5} {--log}';
     protected $description = '[ShipSaaS Inbox] Start the inbox process';
 
     protected bool $isRunning = true;
@@ -21,8 +21,12 @@ class InboxWorkCommand extends Command
         RunningInboxRepository $runningInboxRepo,
         InboxMessageHandler $inboxMessageHandler
     ): void {
-        $this->topic = $this->argument('topic');
+        $this->info('Laravel Inbox Process powered by ShipSaaS!!');
+        $this->info('Thank you for choosing and using our Inbox Process');
+        $this->info('We hope this would scale up and bring the reliability to your applications');
+        $this->info('Feel free to report any issue here: https://github.com/shipsaas/laravel-inbox-process/issues');
 
+        $this->topic = $this->argument('topic');
         // acquire lock first
         if (!$runningInboxRepo->acquireLock($this->topic)) {
             $this->info(sprintf(
@@ -33,6 +37,8 @@ class InboxWorkCommand extends Command
             return;
         }
 
+        $this->info('Starting up the inbox process for topic: ' . $this->topic);
+
         $inboxMessageHandler->setTopic($this->topic);
         $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler);
         $this->startInboxProcess($inboxMessageHandler);
@@ -42,33 +48,41 @@ class InboxWorkCommand extends Command
         RunningInboxRepository $runningInboxRepo,
         InboxMessageHandler $inboxMessageHandler
     ): void {
-        $this->trap([SIGTERM, SIGQUIT], function () use ($runningInboxRepo, $inboxMessageHandler) {
+        $this->trap([SIGTERM, SIGQUIT, SIGINT], function () use ($runningInboxRepo, $inboxMessageHandler) {
+            $this->info("Terminate request received. Inbox process will clean up before closing.");
+
             $this->isRunning = false;
 
-            $this->info('Unlocking topic before closing...');
+            $this->info('Unlocking topic "'.$this->topic.'"...');
             $runningInboxRepo->unlock($this->topic);
-            $this->info('Unlocked topic.');
+            $this->info('Unlocked topic "'.$this->topic.'".');
 
-            $this->info('Gratefully stopped the Inbox Process.');
+            $this->info('The Inbox Process stopped. See you again!');
         });
     }
 
+    private function writeTraceLog(string $log): void
+    {
+        $this->option('log') && $this->info($log);
+    }
 
     private function startInboxProcess(InboxMessageHandler $inboxMessageHandler): void
     {
-        $limit = intval($this->option('limit')) || 10;
-        $wait = intval($this->option('wait')) || 5;
+        $limit = intval($this->option('limit')) ?: 10;
+        $wait = intval($this->option('wait')) ?: 5;
 
         while ($this->isRunning) {
             $totalProcessed = $inboxMessageHandler->process($limit);
 
             // sleep and retry when there is no msg
             if (!$totalProcessed) {
+                $this->writeTraceLog('[Info] No message found. Sleeping and retry...');
+
                 sleep($wait);
                 continue;
             }
 
-            $this->info(sprintf(
+            $this->writeTraceLog(sprintf(
                 '[%s] Processed %s inbox messages',
                 Carbon::now()->toDateTimeString(),
                 $totalProcessed

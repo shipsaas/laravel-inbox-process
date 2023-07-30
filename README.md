@@ -28,7 +28,7 @@ Install the library:
 composer require shipsaas/laravel-inbox-process
 ```
 
-Export and run the migration:
+Export config & migration files and then run the migration:
 
 ```bash
 php artisan vendor:publish --tag=laravel-inbox-process
@@ -38,7 +38,7 @@ php artisan migrate
 ## Glossary
 
 ### Topic
-`topic`: is like a category to put the messages (grouping).
+`topic`: is like a category for the messages (grouping).
 
 You can use a single topic (using the 3rd service name) for everything.
 
