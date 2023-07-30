@@ -17,7 +17,6 @@ if (!function_exists('appendInboxMessage')) {
      */
     function appendInboxMessage(string $topic, string $externalId, array $payload): void
     {
-        app(InboxMessageRepository::class)
-            ->append($topic, $externalId, $payload);
+        app(InboxMessageRepository::class)->append($topic, $externalId, $payload);
     }
 }
