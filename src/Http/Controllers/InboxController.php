@@ -2,11 +2,12 @@
 
 namespace ShipSaasInboxProcess\Http\Controllers;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use ShipSaasInboxProcess\Http\Requests\AbstractInboxRequest;
 use ShipSaasInboxProcess\InboxProcessSetup;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,9 @@ class InboxController extends Controller
 {
     public function handle(
         string $topic,
-        Request $request
+        Request $request,
+        LoggerInterface $logger,
+        ExceptionHandler $exceptionHandler
     ): Response {
         /**
          * @var AbstractInboxRequest $inboxRequest
@@ -37,19 +40,11 @@ class InboxController extends Controller
                 return new JsonResponse(['error' => 'duplicated'], 409);
             }
 
-            // gratefully log for recovery purpose
-            report($exception);
-            Log::warning('Failed to append inbox message', [
-                'topic' => $topic,
-                'external_id' => $inboxRequest->getInboxExternalId(),
-                'payload' => $inboxRequest->getInboxPayload(),
-            ]);
-
-            return new JsonResponse(['error' => 'unknown'], 400);
+            throw $exception;
         } catch (Throwable $throwable) {
             // gratefully log for recovery purpose
-            report($throwable);
-            Log::warning('Failed to append inbox message', [
+            $exceptionHandler->report($throwable);
+            $logger->warning('Failed to append inbox message', [
                 'topic' => $topic,
                 'external_id' => $inboxRequest->getInboxExternalId(),
                 'payload' => $inboxRequest->getInboxPayload(),

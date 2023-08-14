@@ -3,6 +3,7 @@
 namespace ShipSaasInboxProcess\Handlers;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use ShipSaasInboxProcess\Core\Lifecycle;
 use ShipSaasInboxProcess\Entities\InboxMessage;
 use ShipSaasInboxProcess\InboxProcessSetup;
 use ShipSaasInboxProcess\Repositories\InboxMessageRepository;
@@ -40,6 +41,10 @@ class InboxMessageHandler
 
         $processed = 0;
         foreach ($messages as $message) {
+            if (!Lifecycle::isRunning()) {
+                break;
+            }
+
             $this->isHandlingMessage = true;
 
             try {

@@ -14,6 +14,8 @@ if (!function_exists('appendInboxMessage')) {
      * @see \ShipSaasInboxProcess\Http\Controllers\InboxController::handle()
      *
      * @return void
+     * @throws \Illuminate\Database\QueryException
+     * @throws \Throwable
      */
     function appendInboxMessage(string $topic, string $externalId, array $payload): void
     {

@@ -5,6 +5,7 @@ namespace ShipSaasInboxProcess;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider;
 use ShipSaasInboxProcess\Commands\InboxWorkCommand;
+use ShipSaasInboxProcess\Core\Lifecycle;
 
 class InboxProcessServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,8 @@ class InboxProcessServiceProvider extends ServiceProvider
             'inbox'
         );
 
+        $this->loadRoutesFrom(__DIR__ . '/Routes/inbox_routes.php');
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/Database/Migrations/' => database_path('migrations'),
@@ -29,6 +32,8 @@ class InboxProcessServiceProvider extends ServiceProvider
             $this->commands([
                 InboxWorkCommand::class,
             ]);
+
+            Lifecycle::initLifecycle();
         }
     }
 }

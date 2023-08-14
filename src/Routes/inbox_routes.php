@@ -3,4 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use ShipSaasInboxProcess\Http\Controllers\InboxController;
 
-Route::post('inbox/{topic}', [InboxController::class, 'handle']);
+if (config('inbox.uses_default_inbox_route')) {
+    Route::post('inbox/{topic}', [InboxController::class, 'handle']);
+}
