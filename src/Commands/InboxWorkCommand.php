@@ -45,7 +45,7 @@ class InboxWorkCommand extends Command
         $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler);
 
         $inboxMessageHandler->setTopic($this->topic);
-        $this->startInboxProcess($inboxMessageHandler);
+        $this->runInboxProcess($inboxMessageHandler);
     }
 
     private function registerLifecycle(
@@ -68,7 +68,7 @@ class InboxWorkCommand extends Command
         $this->option('log') && $this->info($log);
     }
 
-    private function startInboxProcess(InboxMessageHandler $inboxMessageHandler): void
+    private function runInboxProcess(InboxMessageHandler $inboxMessageHandler): void
     {
         $limit = intval($this->option('limit')) ?: 10;
         $wait = intval($this->option('wait')) ?: 5;

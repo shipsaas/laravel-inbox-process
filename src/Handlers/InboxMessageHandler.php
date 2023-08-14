@@ -3,6 +3,8 @@
 namespace ShipSaasInboxProcess\Handlers;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
 use ShipSaasInboxProcess\Core\Lifecycle;
 use ShipSaasInboxProcess\Entities\InboxMessage;
 use ShipSaasInboxProcess\InboxProcessSetup;
@@ -12,7 +14,6 @@ use Throwable;
 class InboxMessageHandler
 {
     private string $topic;
-    private bool $isHandlingMessage = false;
 
     public function __construct(
         private InboxMessageRepository $inboxMessageRepo,
@@ -25,11 +26,6 @@ class InboxMessageHandler
         $this->topic = $topic;
 
         return $this;
-    }
-
-    public function isHandlingMessage(): bool
-    {
-        return $this->isHandlingMessage;
     }
 
     public function process(int $limit = 10): int
@@ -45,18 +41,19 @@ class InboxMessageHandler
                 break;
             }
 
-            $this->isHandlingMessage = true;
-
             try {
                 $this->processMessage($message);
-                $this->inboxMessageRepo->markAsProcessed($message);
                 $processed++;
             } catch (Throwable $e) {
-                $this->exceptionHandler->report($e);
+                // something really bad happens, we need to stop the process
+                Log::info('Failed to process inbox message', [
+                    'error' => [
+                        'msg' => $e->getMessage(),
+                        'traces' => $e->getTrace(),
+                    ]
+                ]);
 
-                return $processed;
-            } finally {
-                $this->isHandlingMessage = false;
+                throw $e;
             }
         }
 
@@ -75,5 +72,7 @@ class InboxMessageHandler
                         ? $processor->handle($payload)
                         : $processor->__invoke($payload)
             );
+
+        $this->inboxMessageRepo->markAsProcessed($inboxMessage->id);
     }
 }

@@ -3,6 +3,7 @@
 namespace ShipSaasInboxProcess\Core;
 
 use Illuminate\Console\Signals;
+use Symfony\Component\Console\Application;
 
 class Lifecycle
 {
@@ -30,13 +31,17 @@ class Lifecycle
             return;
         }
 
+        $signal = new Signals(app(Application::class)->getSignalRegistry());
+
         collect([SIGTERM, SIGQUIT, SIGINT])
             ->each(
-                fn ($signal) => app(Signals::class)->register(
-                    $signal,
+                fn ($sigId) => $signal->register(
+                    $sigId,
                     static::signalHandler(...)
                 )
             );
+
+        app()->terminating(static::signalHandler(...));
 
         static::$isInitialized = true;
     }
