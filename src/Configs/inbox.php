@@ -9,7 +9,9 @@ return [
     /**
      * The DB connection that Inbox Process should use
      *
-     * Default: null - use Laravel's default connection
+     * Default: null - use Laravel default connection
+     *
+     * Recommendation: use a dedicated DB for inbox, for high availability purposes.
      */
     'db_connection' => null,
 ];

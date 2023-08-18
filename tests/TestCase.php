@@ -1,13 +1,13 @@
 <?php
 
-namespace ShipSaasPriorityQueue\Tests;
+namespace ShipSaasInboxProcess\Tests;
 
 use Dotenv\Dotenv;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Env;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use ShipSaasPriorityQueue\PriorityQueueServiceProvider;
+use ShipSaasInboxProcess\InboxProcessServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            PriorityQueueServiceProvider::class,
+            InboxProcessServiceProvider::class,
         ];
     }
 
@@ -63,7 +63,8 @@ abstract class TestCase extends BaseTestCase
             ->dropAllTables();
 
         $migrationFiles = [
-            __DIR__ . '/../src/Database/Migrations/2022_03_31_17_00_00_create_priority_jobs_table.php',
+            __DIR__ . '/../src/Database/Migrations/2023_07_15_000001_create_inbox_messages_table.php',
+            __DIR__ . '/../src/Database/Migrations/2023_07_15_000002_create_running_inboxes_table.php',
         ];
 
         foreach ($migrationFiles as $migrationFile) {

@@ -16,8 +16,7 @@ class InboxMessageHandler
     private string $topic;
 
     public function __construct(
-        private InboxMessageRepository $inboxMessageRepo,
-        private ExceptionHandler $exceptionHandler
+        private InboxMessageRepository $inboxMessageRepo
     ) {
     }
 
