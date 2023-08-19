@@ -33,7 +33,12 @@ class InboxProcessServiceProvider extends ServiceProvider
                 InboxWorkCommand::class,
             ]);
 
-            $this->app->booted(fn () => Lifecycle::initLifecycle());
+            $this->app->booted(fn () => $this->app->make(Lifecycle::class));
         }
+    }
+
+    public function register(): void
+    {
+        $this->app->singleton(Lifecycle::class);
     }
 }

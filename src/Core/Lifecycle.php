@@ -7,31 +7,35 @@ use Symfony\Component\Console\Application;
 
 class Lifecycle
 {
-    private static bool $isRunning = true;
-    private static bool $isInitialized = false;
+    private bool $isRunning = true;
+    private bool $isInitialized = false;
 
-    private static array $listeners = [
+    private array $listeners = [
         'closing' => [],
         'closed' => [],
     ];
 
-    public static function isRunning(): bool
+    public function __construct(Application $consoleApp)
     {
-        return static::$isRunning;
+        $signals = new Signals($consoleApp->getSignalRegistry());
+        $this->initLifecycle($signals);
     }
 
-    public static function on(LifecycleEventEnum $event, callable $handler): void
+    public function isRunning(): bool
     {
-        static::$listeners[$event->value][] = $handler;
+        return $this->isRunning;
     }
 
-    public static function initLifecycle(): void
+    public function on(LifecycleEventEnum $event, callable $handler): void
     {
-        if (static::$isInitialized) {
+        $this->listeners[$event->value][] = $handler;
+    }
+
+    public function initLifecycle(Signals $signal): void
+    {
+        if ($this->isInitialized) {
             return;
         }
-
-        $signal = new Signals(app(Application::class)->getSignalRegistry());
 
         collect([SIGTERM, SIGQUIT, SIGINT])
             ->each(
@@ -43,18 +47,18 @@ class Lifecycle
 
         app()->terminating(static::signalHandler(...));
 
-        static::$isInitialized = true;
+        $this->isInitialized = true;
     }
 
-    private static function signalHandler(): void
+    private function signalHandler(): void
     {
-        static::$isRunning = false;
+        $this->isRunning = false;
 
-        collect(static::$listeners['closing'])->each(
+        collect($this->listeners['closing'])->each(
             fn (callable $callback) => app()->call($callback)
         );
 
-        collect(static::$listeners['closed'])->each(
+        collect($this->listeners['closed'])->each(
             fn (callable $callback) => app()->call($callback)
         );
     }

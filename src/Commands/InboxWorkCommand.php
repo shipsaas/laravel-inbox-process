@@ -21,7 +21,8 @@ class InboxWorkCommand extends Command
 
     public function handle(
         RunningInboxRepository $runningInboxRepo,
-        InboxMessageHandler $inboxMessageHandler
+        InboxMessageHandler $inboxMessageHandler,
+        Lifecycle $lifecycle
     ): void {
         $this->info('Laravel Inbox Process powered by ShipSaaS!!');
         $this->info('Thank you for choosing and using our Inbox Process');
@@ -42,17 +43,18 @@ class InboxWorkCommand extends Command
 
         $this->info('Locked topic: ' . $this->topic);
         $this->info('Starting up the inbox process for topic: ' . $this->topic);
-        $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler);
+        $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler, $lifecycle);
 
         $inboxMessageHandler->setTopic($this->topic);
-        $this->runInboxProcess($inboxMessageHandler);
+        $this->runInboxProcess($inboxMessageHandler, $lifecycle);
     }
 
     private function registerLifecycle(
         RunningInboxRepository $runningInboxRepo,
-        InboxMessageHandler $inboxMessageHandler
+        InboxMessageHandler $inboxMessageHandler,
+        Lifecycle $lifecycle
     ): void {
-        Lifecycle::on(LifecycleEventEnum::CLOSING, function () use ($runningInboxRepo, $inboxMessageHandler) {
+        $lifecycle->on(LifecycleEventEnum::CLOSING, function () use ($runningInboxRepo, $inboxMessageHandler) {
             $this->info('Terminate request received. Inbox process will clean up before closing.');
 
             $this->info('Unlocking topic "'.$this->topic.'"...');
@@ -68,12 +70,14 @@ class InboxWorkCommand extends Command
         $this->option('log') && $this->info($log);
     }
 
-    private function runInboxProcess(InboxMessageHandler $inboxMessageHandler): void
-    {
+    private function runInboxProcess(
+        InboxMessageHandler $inboxMessageHandler,
+        Lifecycle $lifecycle
+    ): void {
         $limit = intval($this->option('limit')) ?: 10;
         $wait = intval($this->option('wait')) ?: 5;
 
-        while (Lifecycle::isRunning()) {
+        while ($lifecycle->isRunning()) {
             $totalProcessed = $inboxMessageHandler->process($limit);
 
             // sleep and retry when there is no msg

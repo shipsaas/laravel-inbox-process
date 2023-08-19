@@ -2,8 +2,6 @@
 
 namespace ShipSaasInboxProcess\Handlers;
 
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use ShipSaasInboxProcess\Core\Lifecycle;
 use ShipSaasInboxProcess\Entities\InboxMessage;
@@ -36,7 +34,7 @@ class InboxMessageHandler
 
         $processed = 0;
         foreach ($messages as $message) {
-            if (!Lifecycle::isRunning()) {
+            if (!app(Lifecycle::class)->isRunning()) {
                 break;
             }
 
