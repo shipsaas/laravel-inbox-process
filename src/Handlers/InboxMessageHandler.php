@@ -14,7 +14,8 @@ class InboxMessageHandler
     private string $topic;
 
     public function __construct(
-        private InboxMessageRepository $inboxMessageRepo
+        private InboxMessageRepository $inboxMessageRepo,
+        private Lifecycle $lifecycle
     ) {
     }
 
@@ -34,7 +35,7 @@ class InboxMessageHandler
 
         $processed = 0;
         foreach ($messages as $message) {
-            if (!app(Lifecycle::class)->isRunning()) {
+            if (!$this->lifecycle->isRunning()) {
                 break;
             }
 

@@ -35,7 +35,7 @@ class InboxMessageRepository extends AbstractRepository
             ->orderBy('created_at_unix_ms', 'ASC')
             ->limit($limit)
             ->get(['id', 'payload'])
-            ->map(fn (object $record) => InboxMessage::make($record));
+            ->map(InboxMessage::make(...));
     }
 
     public function markAsProcessed(int $messageId): void
