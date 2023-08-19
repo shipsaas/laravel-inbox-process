@@ -24,7 +24,7 @@ class InboxWorkCommand extends Command
         InboxMessageHandler $inboxMessageHandler,
         Lifecycle $lifecycle
     ): void {
-        $this->info('Laravel Inbox Process powered by ShipSaaS!!');
+        $this->alert('Laravel Inbox Process powered by ShipSaaS!!');
         $this->info('Thank you for choosing and using our Inbox Process');
         $this->info('We hope this would scale up and bring the reliability to your application.');
         $this->info('Feel free to report any issue here: https://github.com/shipsaas/laravel-inbox-process/issues');
@@ -32,17 +32,18 @@ class InboxWorkCommand extends Command
         $this->topic = $this->argument('topic');
 
         // acquire lock first
+        $this->line('Acquiring the lock for topic: ' . $this->topic);
         if (!$runningInboxRepo->acquireLock($this->topic)) {
-            $this->info(sprintf(
-                'Unable to lock the %s topic, are you sure it is not running?',
+            $this->error(sprintf(
+                'Unable to lock the "%s" topic, are you sure it is not running?',
                 $this->topic
             ));
 
             return;
         }
 
-        $this->info('Locked topic: ' . $this->topic);
-        $this->info('Starting up the inbox process for topic: ' . $this->topic);
+        $this->line('Locked topic: ' . $this->topic);
+        $this->line('Starting up the inbox process for topic: ' . $this->topic);
         $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler, $lifecycle);
 
         $inboxMessageHandler->setTopic($this->topic);
@@ -55,11 +56,11 @@ class InboxWorkCommand extends Command
         Lifecycle $lifecycle
     ): void {
         $lifecycle->on(LifecycleEventEnum::CLOSING, function () use ($runningInboxRepo, $inboxMessageHandler) {
-            $this->info('Terminate request received. Inbox process will clean up before closing.');
+            $this->warn('Terminate request received. Inbox process will clean up before closing.');
 
-            $this->info('Unlocking topic "'.$this->topic.'"...');
+            $this->line('Unlocking topic "'.$this->topic.'"...');
             $runningInboxRepo->unlock($this->topic);
-            $this->info('Unlocked topic "'.$this->topic.'".');
+            $this->line('Unlocked topic "'.$this->topic.'".');
 
             $this->info('The Inbox Process stopped. See you again!');
         });
@@ -67,7 +68,7 @@ class InboxWorkCommand extends Command
 
     private function writeTraceLog(string $log): void
     {
-        $this->option('log') && $this->info($log);
+        $this->option('log') && $this->line($log);
     }
 
     private function runInboxProcess(
@@ -82,7 +83,7 @@ class InboxWorkCommand extends Command
 
             // sleep and retry when there is no msg
             if (!$totalProcessed) {
-                $this->writeTraceLog('[Info] No message found. Sleeping and retry...');
+                $this->writeTraceLog('[Info] No message found. Sleeping...');
 
                 sleep($wait);
                 continue;

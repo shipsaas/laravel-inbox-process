@@ -9,6 +9,7 @@ class Lifecycle
 {
     private bool $isRunning = true;
     private bool $isInitialized = false;
+    private bool $isTerminated = false;
 
     private array $listeners = [
         'closing' => [],
@@ -52,6 +53,10 @@ class Lifecycle
 
     private function signalHandler(): void
     {
+        if ($this->isTerminated) {
+            return;
+        }
+
         $this->isRunning = false;
 
         collect($this->listeners['closing'])->each(
@@ -61,5 +66,7 @@ class Lifecycle
         collect($this->listeners['closed'])->each(
             fn (callable $callback) => app()->call($callback)
         );
+
+        $this->isTerminated = true;
     }
 }
