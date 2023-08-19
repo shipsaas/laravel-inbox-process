@@ -50,13 +50,6 @@ abstract class TestCase extends BaseTestCase
             'strict' => true,
             'engine' => null,
         ]);
-        $app['config']->set('queue.connections.database-priority', [
-            'driver' => 'database-priority',
-            'connection' => 'mysql',
-            'table' => 'priority_jobs',
-            'queue' => 'default',
-            'retry_after' => 90,
-        ]);
 
         $app['db']->connection('mysql')
             ->getSchemaBuilder()

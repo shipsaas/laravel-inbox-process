@@ -11,13 +11,13 @@ class InboxMessage
     {
         $inboxMsg = new InboxMessage();
         $inboxMsg->id = intval($rawDbRecord->id);
-        $inboxMsg->rawPayload = $rawDbRecord->payload || '{}';
+        $inboxMsg->rawPayload = $rawDbRecord->payload ?: '{}';
 
         return $inboxMsg;
     }
 
     public function getParsedPayload(): array
     {
-        return json_decode($this->rawPayload || '{}');
+        return json_decode($this->rawPayload, true);
     }
 }
