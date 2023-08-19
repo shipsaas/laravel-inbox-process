@@ -17,7 +17,7 @@ class InboxMessageRepository extends AbstractRepository
             ->insert([
                 'topic' => $topic,
                 'external_id' => $externalId,
-                'payload' => $payload,
+                'payload' => json_encode($payload),
                 'created_at' => $now->toDateTimeString(),
                 'created_at_unix_ms' => $now->getTimestampMs()
             ]);

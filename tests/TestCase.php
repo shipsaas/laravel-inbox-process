@@ -35,10 +35,11 @@ abstract class TestCase extends BaseTestCase
             '.env.testing',
         )->load();
 
+        $connection = env('DB_CONNECTION');
         // setup configs
-        $app['config']->set('database.default', 'mysql');
-        $app['config']->set('database.connections.mysql', [
-            'driver' => 'mysql',
+        $app['config']->set('database.default', $connection);
+        $app['config']->set("database.connections.$connection", [
+            'driver' => $connection,
             'host' => env('DB_HOST'),
             'port' => env('DB_PORT'),
             'database' => env('DB_DATABASE'),
@@ -51,7 +52,8 @@ abstract class TestCase extends BaseTestCase
             'engine' => null,
         ]);
 
-        $app['db']->connection('mysql')
+        $app['db']
+            ->connection($connection)
             ->getSchemaBuilder()
             ->dropAllTables();
 

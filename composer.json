@@ -45,7 +45,10 @@
     "autoload": {
         "psr-4": {
             "ShipSaasInboxProcess\\": "src/"
-        }
+        },
+        "files": [
+            "./src/Functions/inbox_functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
