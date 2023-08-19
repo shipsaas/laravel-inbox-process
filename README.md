@@ -8,13 +8,13 @@ The inbox pattern is a popular design pattern that ensures:
 - Execute webhook requests **in ORDER** ✅
 - Trace all prev requests in DB ✅
 
-Laravel Inbox Process (powered by ShipSaaS) takes care of everything and 
-helps you to roll out the inbox process in no time 😎.
+Laravel Inbox Process (powered by ShipSaaS) ships everything and 
+helps you to roll out the inbox process in no time 😎🚀.
 
 ## Supports
 - Laravel 10+
 - PHP 8.2+
-- MySQL 8/Postgres 13+
+- MySQL 8 and Postgres 13+
 
 ## Architecture
 
@@ -37,7 +37,9 @@ php artisan migrate
 
 ## Documentation & Usage
 
-Checkout: [inbox.shipsaas.tech](https://inbox.shipsaas.tech)
+Visit: [ShipSaaS Inbox Documentation](https://inbox.shipsaas.tech)
+
+Best practices & notes are well documented too 😎!
 
 ## Testing
 
@@ -46,7 +48,8 @@ Run `composer test` 😆
 Available Tests:
 
 - Unit Testing
-  - Integration Testing against MySQL & PostgreSQL for the `inbox:work` command
+- Integration Testing against MySQL & PostgreSQL for the `inbox:work` command
+- Human validation (lol)
 
 ## Contributors
 - Seth Phat
