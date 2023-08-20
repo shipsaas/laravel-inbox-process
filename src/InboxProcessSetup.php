@@ -48,9 +48,15 @@ final class InboxProcessSetup
             ?? fn () => new JsonResponse('ok');
     }
 
-    public static function addProcessor(string $topic, string $processorClass): void
+    /**
+     * Register an inbox handler for the given topic
+     *
+     * @param string $topic The topic to register
+     * @param string|callable $processor The handler, can be a classpath or a closure
+     */
+    public static function addProcessor(string $topic, string|callable $processor): void
     {
-        self::$topicHandlersMap[$topic][] = $processorClass;
+        self::$topicHandlersMap[$topic][] = $processor;
     }
 
     public static function getProcessors(string $topic): array

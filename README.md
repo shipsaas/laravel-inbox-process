@@ -1,6 +1,11 @@
 # ShipSaaS - Laravel Inbox Process
 
+[![Build & Test (MySQL & PgSQL)](https://github.com/shipsaas/laravel-inbox-process/actions/workflows/build.yml/badge.svg)](https://github.com/shipsaas/laravel-inbox-process/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/shipsaas/laravel-inbox-process/graph/badge.svg?token=3Z1X9S69C4)](https://codecov.io/gh/shipsaas/laravel-inbox-process)
+
+<p align="center">
+<img src=".github/logo.png" width="200">
+</p>
 
 The inbox pattern is a popular design pattern that ensures:
 

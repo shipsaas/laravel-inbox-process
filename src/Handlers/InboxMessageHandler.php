@@ -63,13 +63,22 @@ class InboxMessageHandler
         $payload = $inboxMessage->getParsedPayload();
 
         collect(InboxProcessSetup::getProcessors($this->topic))
-            ->map(fn (string $processorClass) => app($processorClass))
-            ->each(
-                fn (object $processor) =>
-                    method_exists($processor, 'handle')
-                        ? $processor->handle($payload)
-                        : $processor->__invoke($payload)
-            );
+            ->map(
+                fn (string|callable $processorClass) =>
+                    is_callable($processorClass)
+                        ? $processorClass
+                        : app($processorClass)
+            )
+            ->each(function (object|callable $processor) use ($payload) {
+                if (is_callable($processor)) {
+                    call_user_func_array($processor, [$payload]);
+                    return;
+                }
+
+                method_exists($processor, 'handle')
+                    ? $processor->handle($payload)
+                    : $processor->__invoke($payload);
+            });
 
         $this->inboxMessageRepo->markAsProcessed($inboxMessage->id);
     }

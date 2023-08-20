@@ -13,7 +13,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 #[AsCommand(name: 'inbox:work')]
 class InboxWorkCommand extends Command
 {
-    protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5} {--log=1}';
+    protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5} {--log=1} {--stop-on-empty}';
     protected $description = '[ShipSaaS Inbox] Start the inbox process';
 
     protected bool $isRunning = true;
@@ -83,8 +83,13 @@ class InboxWorkCommand extends Command
 
             // sleep and retry when there is no msg
             if (!$totalProcessed) {
-                $this->writeTraceLog('[Info] No message found. Sleeping...');
+                if ($this->option('stop-on-empty')) {
+                    $this->writeTraceLog('[Info] No message found. Stopping...');
 
+                    break;
+                }
+
+                $this->writeTraceLog('[Info] No message found. Sleeping...');
                 sleep($wait);
                 continue;
             }
