@@ -90,6 +90,24 @@ class InboxWorkCommandTest extends TestCase
 
         $this->assertStringContainsString('Unable to lock the "seth" topic', $result);
     }
+
+    public function testCommandShouldUnlockTopicAfterStopped()
+    {
+        $code = Artisan::call('inbox:work testlock --stop-on-empty');
+
+        $this->assertSame(0, $code);
+
+        /**
+         * A bit tricky because we can't hit the SIGINT or SIGQUIT
+         * So here we'll terminate, but the closing has been registered to the application's lifecycle
+         * => it will unlock the topic
+         */
+        $this->app->terminate();
+
+        $this->assertDatabaseMissing('running_inboxes', [
+            'topic' => 'testlock',
+        ]);
+    }
 }
 
 class InvoicePaymentSucceedEvent
