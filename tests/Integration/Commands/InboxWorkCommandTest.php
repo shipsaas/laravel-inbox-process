@@ -2,11 +2,14 @@
 
 namespace ShipSaasInboxProcess\Tests\Integration\Commands;
 
+use Error;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use ShipSaasInboxProcess\InboxProcessSetup;
 use ShipSaasInboxProcess\Tests\TestCase;
+use Throwable;
 
 class InboxWorkCommandTest extends TestCase
 {
@@ -106,6 +109,30 @@ class InboxWorkCommandTest extends TestCase
 
         $this->assertDatabaseMissing('running_inboxes', [
             'topic' => 'testlock',
+        ]);
+    }
+
+    public function testCommandThrowsErrorWhenFailedToProcessAMessage()
+    {
+        InboxProcessSetup::addProcessor('with_err_msg', function () {
+            throw new Error('Cannot process');
+        });
+        Log::expects('error')->atLeast()->once();
+
+        appendInboxMessage('with_err_msg', '1', []);
+
+        $exception = null;
+        try {
+            $this->artisan('inbox:work with_err_msg --stop-on-empty');
+        } catch (Throwable $e) {
+            $exception = $e;
+        }
+
+        $this->assertNotNull($exception);
+        $this->assertInstanceOf(Error::class, $exception);
+
+        $this->assertDatabaseMissing('running_inboxes', [
+            'topic' => 'with_err_msg',
         ]);
     }
 }

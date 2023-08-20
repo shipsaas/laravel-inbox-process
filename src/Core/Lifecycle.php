@@ -32,6 +32,14 @@ class Lifecycle
         $this->listeners[$event->value][] = $handler;
     }
 
+    /**
+     * @note this will run the closing/closed callbacks, so be highly aware
+     */
+    public function forceClose(): void
+    {
+        $this->signalHandler();
+    }
+
     public function initLifecycle(Signals $signal): void
     {
         if ($this->isInitialized) {

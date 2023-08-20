@@ -44,12 +44,14 @@ class InboxMessageHandler
                 $processed++;
             } catch (Throwable $e) {
                 // something really bad happens, we need to stop the process
-                Log::info('Failed to process inbox message', [
+                Log::error('Failed to process inbox message', [
                     'error' => [
                         'msg' => $e->getMessage(),
                         'traces' => $e->getTrace(),
                     ]
                 ]);
+
+                $this->lifecycle->forceClose();
 
                 throw $e;
             }
