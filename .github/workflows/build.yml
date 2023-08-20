@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build & Test (MySQL & PgSQL)
 
 on:
     pull_request:

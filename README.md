@@ -1,5 +1,7 @@
 # ShipSaaS - Laravel Inbox Process
 
+[![codecov](https://codecov.io/gh/shipsaas/laravel-inbox-process/graph/badge.svg?token=3Z1X9S69C4)](https://codecov.io/gh/shipsaas/laravel-inbox-process)
+
 The inbox pattern is a popular design pattern that ensures:
 
 - High availability ✅
