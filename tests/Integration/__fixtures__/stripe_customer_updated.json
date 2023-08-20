@@ -1,0 +1,46 @@
+{
+    "id": "evt_1Nh2fp2eZvKYlo2CzbNockEM",
+    "data": {
+        "object": {
+            "id": "cus_9s6XKzkNRiz8i3",
+            "object": "customer",
+            "address": null,
+            "balance": 0,
+            "created": 1483565364,
+            "currency": "usd",
+            "default_source": "card_1NZex82eZvKYlo2CZR21ocY1",
+            "delinquent": false,
+            "description": "My First Test Customer (created for API docs at https://www.stripe.com/docs/api)",
+            "discount": null,
+            "email": "test@test.com",
+            "invoice_prefix": "28278FC",
+            "invoice_settings": {
+                "custom_fields": null,
+                "default_payment_method": null,
+                "footer": null,
+                "rendering_options": null
+            },
+            "livemode": false,
+            "metadata": {
+                "order_id": "1234"
+            },
+            "name": null,
+            "next_invoice_sequence": 77,
+            "phone": null,
+            "preferred_locales": [],
+            "shipping": null,
+            "tax_exempt": "none",
+            "test_clock": null
+        }
+    },
+    "type": "customer.updated",
+    "object": "event",
+    "created": 1689987898,
+    "request": {
+        "id": null,
+        "idempotency_key": null
+    },
+    "livemode": false,
+    "api_version": "2022-11-15",
+    "pending_webhooks": 2
+}

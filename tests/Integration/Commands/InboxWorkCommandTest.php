@@ -24,6 +24,7 @@ class InboxWorkCommandTest extends TestCase
         });
 
         InboxProcessSetup::addProcessor('stripe', StripeInvoicePaidHandler::class);
+        InboxProcessSetup::addProcessor('stripe', StripCustomerUpdatedHandler::class);
 
         // 2. append msgs
         appendInboxMessage(
@@ -36,6 +37,11 @@ class InboxWorkCommandTest extends TestCase
             'evt_1NWUFiBGIr5C5v4TptQhGyW3',
             json_decode(file_get_contents(__DIR__ . '/../__fixtures__/stripe_invoice_paid.json'), true)
         );
+        appendInboxMessage(
+            'stripe',
+            'evt_1Nh2fp2eZvKYlo2CzbNockEM',
+            json_decode(file_get_contents(__DIR__ . '/../__fixtures__/stripe_customer_updated.json'), true)
+        );
 
         // 3. run
         $code = Artisan::call('inbox:work stripe --stop-on-empty');
@@ -43,7 +49,7 @@ class InboxWorkCommandTest extends TestCase
 
         // 4. validate
         $this->assertSame(0, $code);
-        $this->assertStringContainsString('Processed 2 inbox messages', $result);
+        $this->assertStringContainsString('Processed 3 inbox messages', $result);
         $this->assertStringContainsString('[Info] No message found. Stopping...', $result);
 
         Event::assertDispatched(
@@ -53,6 +59,10 @@ class InboxWorkCommandTest extends TestCase
         Event::assertDispatched(
             InvoicePaidEvent::class,
             fn (InvoicePaidEvent $event) => $event->invoiceId === 'in_1NVOkaBGIr5C5v4TZgwGUo0Q'
+        );
+        Event::assertDispatched(
+            CustomerUpdatedEvent::class,
+            fn (CustomerUpdatedEvent $event) => $event->customerId === 'cus_9s6XKzkNRiz8i3'
         );
     }
 
@@ -92,5 +102,25 @@ class StripeInvoicePaidHandler
 
         $invoiceId = data_get($payload, 'data.object.id');
         Event::dispatch(new InvoicePaidEvent($invoiceId));
+    }
+}
+
+class CustomerUpdatedEvent
+{
+    public function __construct(public string $customerId)
+    {
+    }
+}
+
+class StripCustomerUpdatedHandler
+{
+    public function __invoke(array $payload): void
+    {
+        if ($payload['type'] !== 'customer.updated') {
+            return;
+        }
+
+        $cusId = data_get($payload, 'data.object.id');
+        Event::dispatch(new CustomerUpdatedEvent($cusId));
     }
 }
