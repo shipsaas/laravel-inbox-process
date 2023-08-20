@@ -1,6 +1,4 @@
-name: Build & Test (PHP 8.2)
-env:
-    TESTING_ENV: ${{ secrets.TESTING_ENV }}
+name: Build & Test
 
 on:
     pull_request:
@@ -16,8 +14,18 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                version: [ '8.2' ]
+                db: ['mysql', 'pgsql']
         runs-on: ubuntu-latest
+        services:
+            postgresql:
+                image: postgres:14
+                env:
+                    POSTGRES_DB: inbox
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                ports:
+                    - 5432:5432
+                options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -   uses: actions/checkout@v3
                 if: success()
@@ -28,15 +36,23 @@ jobs:
                     php-version: ${{ matrix.version }}
                     coverage: pcov
 
-            -   name: Setup
+            -   name: Start MySQL Database
+                if: matrix.db == 'mysql'
+                run: |
+                  sudo service mysql start
+                  mysql -uroot -proot -e "CREATE DATABASE inbox;"
+                  cp .github/envs/.env.testing.mysql .env.testing
+
+            -   name: Start PGSQL Database
+                if: matrix.db == 'pgsql'
+                run: |
+                    cp .github/envs/.env.testing.pgsql .env.testing
+
+            -   name: Bootstrap project
                 if: success()
                 run: |
-                    sudo service mysql start
                     php -v
-                    mysql -uroot -proot -e "CREATE DATABASE inbox;"
                     composer install --no-interaction
-                    echo "$TESTING_ENV" > .env.testing
-                    echo "$TESTING_ENV" > .env
 
             -   name: PHPUnit tests with coverage
                 if: success() && github.event.pull_request.draft == false
@@ -44,7 +60,7 @@ jobs:
                     composer test-coverage
 
             -   name: upload coverage to codecov.io
-                if: success()
+                if: success() && matrix.db == 'mysql'
                 uses: codecov/codecov-action@v3
                 with:
                     token: ${{ secrets.CODECOV_TOKEN }}

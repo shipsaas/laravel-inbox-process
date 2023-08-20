@@ -2,15 +2,6 @@ name: Try Install Package (Laravel 10)
 env:
     LOCAL_ENV: ${{ secrets.LOCAL_ENV }}
 
-on:
-    pull_request:
-        branches:
-            - 'main'
-        types: [ opened, synchronize, reopened, ready_for_review ]
-    push:
-        branches:
-            - 'main'
-
 jobs:
     build:
         strategy:
