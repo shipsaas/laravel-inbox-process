@@ -23,7 +23,7 @@ class InboxWorkCommand extends Command
         RunningInboxRepository $runningInboxRepo,
         InboxMessageHandler $inboxMessageHandler,
         Lifecycle $lifecycle
-    ): void {
+    ): int {
         $this->alert('Laravel Inbox Process powered by ShipSaaS!!');
         $this->info('Thank you for choosing and using our Inbox Process');
         $this->info('We hope this would scale up and bring the reliability to your application.');
@@ -39,7 +39,7 @@ class InboxWorkCommand extends Command
                 $this->topic
             ));
 
-            return;
+            return 1;
         }
 
         $this->line('Locked topic: ' . $this->topic);
@@ -48,6 +48,8 @@ class InboxWorkCommand extends Command
 
         $inboxMessageHandler->setTopic($this->topic);
         $this->runInboxProcess($inboxMessageHandler, $lifecycle);
+
+        return 0;
     }
 
     private function registerLifecycle(

@@ -3,6 +3,7 @@
 namespace ShipSaasInboxProcess\Tests\Integration\Commands;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use ShipSaasInboxProcess\InboxProcessSetup;
 use ShipSaasInboxProcess\Tests\TestCase;
@@ -75,6 +76,19 @@ class InboxWorkCommandTest extends TestCase
 
         $this->assertStringContainsString('Locked topic: test', $result);
         $this->assertStringContainsString('[Info] No message found. Stopping...', $result);
+    }
+
+    public function testCommandStopsWhenUnableToAcquireLock()
+    {
+        DB::table('running_inboxes')
+            ->insert(['topic' => 'seth']);
+
+        $code = Artisan::call('inbox:work seth --stop-on-empty');
+        $result = Artisan::output();
+
+        $this->assertSame(1, $code);
+
+        $this->assertStringContainsString('Unable to lock the "seth" topic', $result);
     }
 }
 
