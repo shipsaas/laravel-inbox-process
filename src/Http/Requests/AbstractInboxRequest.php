@@ -11,15 +11,15 @@ abstract class AbstractInboxRequest extends FormRequest
      *
      * @return string
      */
-    abstract public function getInboxExternalId(): string | null;
+    abstract public function getInboxExternalId(): string;
 
     /**
      * If the contractor wanted to get a different payload or generate custom things
      * then the contractor would need to override this method
      *
-     * @return mixed
+     * @return array
      */
-    public function getInboxPayload(): mixed
+    public function getInboxPayload(): array
     {
         return $this->all();
     }

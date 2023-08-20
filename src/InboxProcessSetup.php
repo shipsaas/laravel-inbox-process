@@ -9,17 +9,17 @@ use ShipSaasInboxProcess\Http\Requests\DefaultCustomInboxRequest;
 final class InboxProcessSetup
 {
     /**
-     * Record<string, string>
+     * @var \ArrayAccess<string, AbstractInboxRequest>
      */
     private static array $topicRequestMap = [];
 
     /**
-     * Record<string, callable>
+     * @var \ArrayAccess<string, callable>
      */
     private static array $topicResponseMap = [];
 
     /**
-     * Record<string, string[]>
+     * @var \ArrayAccess<string, string[]>
      */
     private static array $topicHandlersMap = [];
 
@@ -44,11 +44,8 @@ final class InboxProcessSetup
 
     public static function getResponse(string $topic): callable
     {
-        if (!isset(self::$topicRequestMap[$topic])) {
-            return fn () => new JsonResponse('ok');
-        }
-
-        return self::$topicResponseMap[$topic];
+        return self::$topicResponseMap[$topic]
+            ?? fn () => new JsonResponse('ok');
     }
 
     public static function addProcessor(string $topic, string $processorClass): void
