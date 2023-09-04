@@ -6,11 +6,12 @@
     </include>
     <exclude>
       <directory suffix=".php">./src/Database</directory>
-      <file>./src/PriorityQueueServiceProvider.php</file>
+      <directory suffix=".php">./src/Configs</directory>
+      <file>./src/InboxProcessServiceProvider.php</file>
     </exclude>
   </coverage>
   <testsuites>
-    <testsuite name="Laravel Priority Queue Test Suite">
+    <testsuite name="Laravel Inbox Pattern Process Test Suite">
       <directory suffix=".php">./tests/</directory>
         <exclude>./tests/TestCase.php</exclude>
     </testsuite>
