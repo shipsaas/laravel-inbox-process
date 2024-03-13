@@ -33,7 +33,7 @@ jobs:
             -   name: Setup PHP with coverage driver
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: ${{ matrix.version }}
+                    php-version: 8.2
                     coverage: pcov
 
             -   name: Start MySQL Database
