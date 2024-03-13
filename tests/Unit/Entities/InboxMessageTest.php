@@ -11,10 +11,12 @@ class InboxMessageTest extends TestCase
     {
         $inboxMsg = InboxMessage::make((object) [
             'id' => 1000,
+            'external_id' => 'fake-id',
             'payload' => '{"hello": "world"}',
         ]);
 
         $this->assertSame(1000, $inboxMsg->id);
+        $this->assertSame('fake-id', $inboxMsg->externalId);
         $this->assertSame('{"hello": "world"}', $inboxMsg->rawPayload);
     }
 
@@ -22,10 +24,12 @@ class InboxMessageTest extends TestCase
     {
         $inboxMsg = InboxMessage::make((object) [
             'id' => 1000,
+            'external_id' => 'fake-id',
             'payload' => null,
         ]);
 
         $this->assertSame(1000, $inboxMsg->id);
+        $this->assertSame('fake-id', $inboxMsg->externalId);
         $this->assertSame('{}', $inboxMsg->rawPayload);
     }
 
@@ -33,6 +37,7 @@ class InboxMessageTest extends TestCase
     {
         $inboxMsg = InboxMessage::make((object) [
             'id' => 1000,
+            'external_id' => 'fake-id',
             'payload' => '{"hello": "world"}',
         ]);
 
@@ -46,6 +51,7 @@ class InboxMessageTest extends TestCase
         $inboxMsg = InboxMessage::make((object) [
             'id' => 1000,
             'payload' => null,
+            'external_id' => 'fake-id',
         ]);
 
         $this->assertSame([], $inboxMsg->getParsedPayload());
