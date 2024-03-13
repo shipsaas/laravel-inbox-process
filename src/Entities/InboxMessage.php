@@ -12,7 +12,7 @@ class InboxMessage
     {
         $inboxMsg = new InboxMessage();
         $inboxMsg->id = intval($rawDbRecord->id);
-        $inboxMsg->externalId = $rawDbRecord->externalId;
+        $inboxMsg->externalId = $rawDbRecord->external_id;
         $inboxMsg->rawPayload = $rawDbRecord->payload ?: '{}';
 
         return $inboxMsg;
