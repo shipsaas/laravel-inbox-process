@@ -29,7 +29,7 @@ And with that being said:
 helps you to roll out the inbox process in no time 😎🚀.
 
 ## Supports
-- Laravel 10+
+- Laravel 10 & 11
 - PHP 8.2+
 - MySQL 8, MariaDB & Postgres 13+
 
