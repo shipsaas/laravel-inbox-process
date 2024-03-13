@@ -64,9 +64,11 @@ Run `composer test` 😆
 
 Available Tests:
 
-- Unit Testing
-- Integration Testing against MySQL & PostgreSQL for the `inbox:work` command
-- Human validation (lol)
+- Unit Testing 💪
+- Integration Testing against MySQL & PostgreSQL for the `inbox:work` command 😎
+- Human validation (lol) 🔥
+
+ShipSaaS loves tests, we won't ship sh!tty libraries 🌹
 
 ## Contributors
 - Seth Phat
