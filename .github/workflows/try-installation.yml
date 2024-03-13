@@ -1,6 +1,11 @@
 name: Try Install Package (Laravel 10 & 11)
+
 env:
     LOCAL_ENV: ${{ secrets.LOCAL_ENV }}
+on:
+    push:
+        branches:
+            - 'main'
 
 jobs:
     build:
