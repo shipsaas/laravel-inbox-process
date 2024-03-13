@@ -24,7 +24,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^10|dev-master",
+        "laravel/framework": "^10|^11|dev-master",
         "ext-pcntl": "*"
     },
     "require-dev": {
