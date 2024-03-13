@@ -7,23 +7,33 @@
 <img src=".github/logo.png" width="200">
 </p>
 
-The inbox pattern is a popular design pattern that ensures:
+Talking about distributed computers & servers, it is quite normal nowadays to communicate between servers.
+
+Unlike a regular conversation though, there's no guarantee the message gets delivered only once, arrives in the right order, or even gets a "got it!" reply.
+
+Thus, we have **Inbox Pattern** to help us to achieve that.
+
+## What is the Inbox Pattern
+
+**The Inbox Pattern** is a popular design pattern in the microservice architecture that ensures:
 
 - High availability ✅
 - Guaranteed webhook deliverance, no msg lost ✅
 - Guaranteed **exactly-once/unique** webhook requests ✅
-- Execute webhook requests **in ORDER** ✅
+- Execute webhook requests **in ORDER/sequence** ✅
 - (Optional) High visibility & debug all prev requests ✅
 
-Laravel Inbox Process (powered by ShipSaaS) ships everything and 
+And with that being said:
+
+**Laravel Inbox Process (powered by ShipSaaS)** ships everything out-of-the-box and 
 helps you to roll out the inbox process in no time 😎🚀.
 
 ## Supports
 - Laravel 10+
 - PHP 8.2+
-- MySQL 8 and Postgres 13+
+- MySQL 8, MariaDB & Postgres 13+
 
-## Architecture
+## Architecture Diagram
 
 ![ShipSaaS - Laravel Inbox Process](./.github/arch.png)
 
@@ -46,7 +56,7 @@ php artisan migrate
 
 Visit: [ShipSaaS Inbox Documentation](https://inbox.shipsaas.tech)
 
-Best practices & notes are well documented too 😎!
+Best practices, usage & notes are well documented too 😎!
 
 ## Testing
 
@@ -54,9 +64,11 @@ Run `composer test` 😆
 
 Available Tests:
 
-- Unit Testing
-- Integration Testing against MySQL & PostgreSQL for the `inbox:work` command
-- Human validation (lol)
+- Unit Testing 💪
+- Integration Testing against MySQL & PostgreSQL for the `inbox:work` command 😎
+- Human validation (lol) 🔥
+
+ShipSaaS loves tests, we won't ship sh!tty libraries 🌹
 
 ## Contributors
 - Seth Phat

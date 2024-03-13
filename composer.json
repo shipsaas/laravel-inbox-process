@@ -1,7 +1,7 @@
 {
     "name": "shipsaas/laravel-inbox-process",
     "type": "library",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Inbox pattern process implementation for your Laravel Applications",
     "keywords": [
         "laravel library",
@@ -24,7 +24,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^10|dev-master",
+        "laravel/framework": "^10|^11|dev-master",
         "ext-pcntl": "*"
     },
     "require-dev": {

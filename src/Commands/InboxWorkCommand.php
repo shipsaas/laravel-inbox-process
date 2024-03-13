@@ -13,7 +13,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 #[AsCommand(name: 'inbox:work')]
 class InboxWorkCommand extends Command
 {
-    protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5} {--log=1} {--stop-on-empty}';
+    protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5} {--log=1} {--stop-on-empty} {--max-processing-time=3600}';
     protected $description = '[ShipSaaS Inbox] Start the inbox process';
 
     protected bool $isRunning = true;
@@ -47,6 +47,7 @@ class InboxWorkCommand extends Command
         $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler, $lifecycle);
 
         $inboxMessageHandler->setTopic($this->topic);
+        $inboxMessageHandler->setHandleWriteLog($this->writeTraceLog(...));
         $this->runInboxProcess($inboxMessageHandler, $lifecycle);
 
         return 0;
@@ -79,6 +80,9 @@ class InboxWorkCommand extends Command
     ): void {
         $limit = intval($this->option('limit')) ?: 10;
         $wait = intval($this->option('wait')) ?: 5;
+        $maxProcessingTime = intval($this->option('max-processing-time')) ?: 3600;
+
+        $processNeedToCloseAt = Carbon::now()->timestamp + $maxProcessingTime;
 
         while ($lifecycle->isRunning()) {
             $totalProcessed = $inboxMessageHandler->process($limit);
@@ -87,6 +91,12 @@ class InboxWorkCommand extends Command
             if (!$totalProcessed) {
                 if ($this->option('stop-on-empty')) {
                     $this->writeTraceLog('[Info] No message found. Stopping...');
+
+                    break;
+                }
+
+                if (Carbon::now()->timestamp >= $processNeedToCloseAt) {
+                    $this->writeTraceLog('[Info] Reached max processing time. Closing the process.');
 
                     break;
                 }

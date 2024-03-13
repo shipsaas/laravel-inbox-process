@@ -54,6 +54,16 @@ class InboxWorkCommandTest extends TestCase
         // 4. validate
         $this->assertSame(0, $code);
         $this->assertStringContainsString('Processed 3 inbox messages', $result);
+
+        $this->assertStringContainsString('Handling message with externalId: "evt_1NWX0RBGIr5C5v4TpncL2sCf"', $result);
+        $this->assertStringContainsString('Handled message with externalId: "evt_1NWX0RBGIr5C5v4TpncL2sCf"', $result);
+
+        $this->assertStringContainsString('Handling message with externalId: "evt_1NWUFiBGIr5C5v4TptQhGyW3"', $result);
+        $this->assertStringContainsString('Handled message with externalId: "evt_1NWUFiBGIr5C5v4TptQhGyW3"', $result);
+
+        $this->assertStringContainsString('Handling message with externalId: "evt_1Nh2fp2eZvKYlo2CzbNockEM"', $result);
+        $this->assertStringContainsString('Handled message with externalId: "evt_1Nh2fp2eZvKYlo2CzbNockEM"', $result);
+
         $this->assertStringContainsString('[Info] No message found. Stopping...', $result);
 
         Event::assertDispatched(
@@ -134,6 +144,22 @@ class InboxWorkCommandTest extends TestCase
         $this->assertDatabaseMissing('running_inboxes', [
             'topic' => 'with_err_msg',
         ]);
+    }
+
+    public function testCommandStopsAfterAnAmountOfTime()
+    {
+        $beginAt = time();
+
+        $code = Artisan::call('inbox:work test --max-processing-time=10');
+        $result = Artisan::output();
+
+        $finishedAt = time();
+
+        $this->assertSame(0, $code);
+
+        $this->assertStringContainsString('[Info] Reached max processing time. Closing the process.', $result);
+
+        $this->assertGreaterThanOrEqual(10, $finishedAt - $beginAt);
     }
 }
 

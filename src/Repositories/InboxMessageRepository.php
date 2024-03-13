@@ -34,7 +34,7 @@ class InboxMessageRepository extends AbstractRepository
             ->where('topic', $topic)
             ->orderBy('created_at_unix_ms', 'ASC')
             ->limit($limit)
-            ->get(['id', 'payload'])
+            ->get(['id', 'external_id', 'payload'])
             ->map(InboxMessage::make(...));
     }
 
