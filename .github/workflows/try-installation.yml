@@ -31,4 +31,4 @@ jobs:
                     composer require shipsaas/laravel-priority-queue
                     php artisan vendor:publish --tag=priority-queue-migrations
                     echo "$LOCAL_ENV" > .env
-                    php artisan migrate
+                    php artisan migrate --force
