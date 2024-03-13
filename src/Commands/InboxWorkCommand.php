@@ -47,6 +47,7 @@ class InboxWorkCommand extends Command
         $this->registerLifecycle($runningInboxRepo, $inboxMessageHandler, $lifecycle);
 
         $inboxMessageHandler->setTopic($this->topic);
+        $inboxMessageHandler->setHandleWriteLog($this->writeTraceLog(...));
         $this->runInboxProcess($inboxMessageHandler, $lifecycle);
 
         return 0;

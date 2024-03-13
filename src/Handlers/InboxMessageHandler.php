@@ -2,6 +2,7 @@
 
 namespace ShipSaasInboxProcess\Handlers;
 
+use Closure;
 use Illuminate\Support\Facades\Log;
 use ShipSaasInboxProcess\Core\Lifecycle;
 use ShipSaasInboxProcess\Entities\InboxMessage;
@@ -12,6 +13,7 @@ use Throwable;
 class InboxMessageHandler
 {
     private string $topic;
+    private Closure $handleWriteLog;
 
     public function __construct(
         private InboxMessageRepository $inboxMessageRepo,
@@ -22,6 +24,13 @@ class InboxMessageHandler
     public function setTopic(string $topic): self
     {
         $this->topic = $topic;
+
+        return $this;
+    }
+
+    public function setHandleWriteLog(?Closure $handleWriteLog): self
+    {
+        $this->handleWriteLog = $handleWriteLog;
 
         return $this;
     }
@@ -40,15 +49,42 @@ class InboxMessageHandler
             }
 
             try {
+                call_user_func(
+                    $this->handleWriteLog,
+                    sprintf(
+                        '[MsgId: %s] Handling message with externalId: "%s"',
+                        $message->id,
+                        $message->externalId
+                    )
+                );
+
                 $this->processMessage($message);
                 $processed++;
+
+                call_user_func(
+                    $this->handleWriteLog,
+                    sprintf(
+                        '[MsgId: %s] Handled message with externalId: "%s"',
+                        $message->id,
+                        $message->externalId
+                    )
+                );
             } catch (Throwable $e) {
+                call_user_func(
+                    $this->handleWriteLog,
+                    sprintf(
+                        '[MsgId: %s] Failed to handle message with externalId: "%s" - Process will be aborted',
+                        $message->id,
+                        $message->externalId
+                    )
+                );
+
                 // something really bad happens, we need to stop the process
                 Log::error('Failed to process inbox message', [
                     'error' => [
                         'msg' => $e->getMessage(),
                         'traces' => $e->getTrace(),
-                    ]
+                    ],
                 ]);
 
                 $this->lifecycle->forceClose();
