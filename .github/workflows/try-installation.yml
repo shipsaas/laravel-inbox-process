@@ -30,5 +30,3 @@ jobs:
                     cd laravel
                     composer require shipsaas/laravel-inbox-process
                     php artisan vendor:publish --tag=laravel-inbox-process
-                    echo "$LOCAL_ENV" > .env
-                    php artisan migrate --force
