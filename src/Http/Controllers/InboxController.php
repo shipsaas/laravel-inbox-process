@@ -2,6 +2,7 @@
 
 namespace ShipSaasInboxProcess\Http\Controllers;
 
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +27,8 @@ class InboxController extends Controller
          * @var AbstractInboxRequest $inboxRequest
          */
         $inboxRequest = InboxProcessSetup::getRequest($topic)::createFrom($request);
+        $inboxRequest->setContainer(Container::getInstance());
+        $inboxRequest->setRedirector(Container::getInstance()->get('redirect'));
 
         // to ensure we have legit data before inserting
         // - authorize
