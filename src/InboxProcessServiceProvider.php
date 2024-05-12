@@ -13,7 +13,7 @@ class InboxProcessServiceProvider extends ServiceProvider
     {
         AboutCommand::add(
             'ShipSaaS: Laravel Inbox Process',
-            fn () => ['Version' => 'v1.0.0']
+            fn () => ['Version' => 'v1.1.1']
         );
 
         $this->mergeConfigFrom(

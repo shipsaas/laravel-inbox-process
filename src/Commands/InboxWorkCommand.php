@@ -14,7 +14,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 class InboxWorkCommand extends Command
 {
     protected $signature = 'inbox:work {topic} {--limit=10} {--wait=5} {--log=1} {--stop-on-empty} {--max-processing-time=3600}';
-    protected $description = '[ShipSaaS Inbox] Start the inbox process';
+    protected $description = '[ShipSaaS Inbox Process] Run the inbox worker for specific topic';
 
     protected bool $isRunning = true;
     protected string $topic;

@@ -14,7 +14,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                db: ['mysql', 'pgsql']
+                db: ['mysql', 'pgsql', 'sqlite']
         runs-on: ubuntu-latest
         services:
             postgresql:
@@ -48,6 +48,14 @@ jobs:
                 run: |
                     cp .github/envs/.env.testing.pgsql .env.testing
 
+            -   name: Start SQLite Database
+                if: matrix.db == 'sqlite'
+                run: |
+                    cp .github/envs/.env.testing.pgsql .env.testing
+                    touch database.sqlite
+                    DB_DATABASE="$(pwd)/database.sqlite"
+                    echo $DB_DATABASE
+
             -   name: Bootstrap project
                 if: success()
                 run: |
@@ -55,12 +63,12 @@ jobs:
                     composer install --no-interaction
 
             -   name: PHPUnit tests with coverage
-                if: success() && github.event.pull_request.draft == false
+                if: success()
                 run: |
                     composer test-coverage
 
             -   name: upload coverage to codecov.io
-                if: success() && matrix.db == 'mysql'
+                if: success()
                 uses: codecov/codecov-action@v3
                 with:
                     token: ${{ secrets.CODECOV_TOKEN }}

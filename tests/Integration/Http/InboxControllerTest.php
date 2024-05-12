@@ -2,8 +2,8 @@
 
 namespace ShipSaasInboxProcess\Tests\Integration\Http;
 
+use Error;
 use Illuminate\Http\JsonResponse;
-use PHPUnit\Framework\Error;
 use ShipSaasInboxProcess\Http\Requests\AbstractInboxRequest;
 use ShipSaasInboxProcess\InboxProcessSetup;
 use ShipSaasInboxProcess\Repositories\InboxMessageRepository;
@@ -117,5 +117,82 @@ class InboxControllerTest extends TestCase
             route('inbox.topic', ['topic' => 'stripe']),
             $body
         )->assertStatus(400);
+    }
+
+    public function testInboxWillNotRecordIfAuthorizeReturnsFalse()
+    {
+        $body = json_decode(
+            file_get_contents(__DIR__ . '/../__fixtures__/stripe_invoice_payment_succeed.json'),
+            true
+        );
+
+        InboxProcessSetup::addRequest('stripe', new class() extends AbstractInboxRequest {
+            public function authorize(): bool
+            {
+                return false;
+            }
+
+            public function getInboxExternalId(): string
+            {
+                return $this->input('id');
+            }
+        });
+
+        InboxProcessSetup::addResponse('stripe', function () {
+            return new JsonResponse('OK MAN');
+        });
+
+        $this->json(
+            'POST',
+            route('inbox.topic', ['topic' => 'stripe']),
+            $body
+        )->assertForbidden();
+
+        $this->assertDatabaseMissing('inbox_messages', [
+            'topic' => 'stripe',
+            'external_id' => 'evt_1NWX0RBGIr5C5v4TpncL2sCf',
+        ]);
+    }
+
+    public function testInboxWillNotRecordIfValidatesFail()
+    {
+        $body = json_decode(
+            file_get_contents(__DIR__ . '/../__fixtures__/stripe_invoice_payment_succeed.json'),
+            true
+        );
+
+        InboxProcessSetup::addRequest('stripe', new class() extends AbstractInboxRequest {
+            public function authorize(): bool
+            {
+                return true;
+            }
+
+            public function rules(): array
+            {
+                return [
+                    'this-is-a-fake-field-to-obtain-error' => 'required',
+                ];
+            }
+
+            public function getInboxExternalId(): string
+            {
+                return $this->input('id');
+            }
+        });
+
+        InboxProcessSetup::addResponse('stripe', function () {
+            return new JsonResponse('OK MAN');
+        });
+
+        $this->json(
+            'POST',
+            route('inbox.topic', ['topic' => 'stripe']),
+            $body
+        )->assertUnprocessable();
+
+        $this->assertDatabaseMissing('inbox_messages', [
+            'topic' => 'stripe',
+            'external_id' => 'evt_1NWX0RBGIr5C5v4TpncL2sCf',
+        ]);
     }
 }
