@@ -2,8 +2,8 @@
 
 namespace ShipSaasInboxProcess\Tests\Integration\Http;
 
+use Error;
 use Illuminate\Http\JsonResponse;
-use PHPUnit\Framework\Error;
 use ShipSaasInboxProcess\Http\Requests\AbstractInboxRequest;
 use ShipSaasInboxProcess\InboxProcessSetup;
 use ShipSaasInboxProcess\Repositories\InboxMessageRepository;
