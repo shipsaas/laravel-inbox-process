@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
 use ShipSaasInboxProcess\Http\Requests\AbstractInboxRequest;
 use ShipSaasInboxProcess\InboxProcessSetup;
@@ -26,6 +27,11 @@ class InboxController extends Controller
          */
         $inboxRequest = InboxProcessSetup::getRequest($topic)::createFrom($request);
 
+        // to ensure we have legit data before inserting
+        // - authorize
+        // - validate
+        $inboxRequest->validateResolved();
+
         // insert inbox msg
         try {
             appendInboxMessage(
@@ -34,12 +40,19 @@ class InboxController extends Controller
                 $inboxRequest->getInboxPayload()
             );
         } catch (QueryException $exception) {
-            // 23000: mysql unique
-            // 23505: pgsql unique_violation
-            if (in_array($exception->getCode(), ['23000', '23505'])) {
+            if (
+                // 23000: mysql unique
+                // 23505: pgsql unique_violation
+                // SQLITE_CONSTRAINT: sqlite
+                in_array($exception->getCode(), ['23000', '23505', 'SQLITE_CONSTRAINT'])
+
+                // SQLite (just in case the above does not work)
+                || Str::contains($exception->getMessage(), 'UNIQUE constraint failed', true)
+            ) {
                 return new JsonResponse(['error' => 'duplicated'], 409);
             }
 
+            // probably DB has some issues? better to throw
             throw $exception;
         } catch (Throwable $throwable) {
             // gratefully log for recovery purpose
@@ -50,6 +63,8 @@ class InboxController extends Controller
                 'payload' => $inboxRequest->getInboxPayload(),
             ]);
 
+            // returns 400 to indicate retries from 3rd-party
+            // many parties would do up-to-5-times retry
             return new JsonResponse(['error' => 'unknown'], 400);
         }
 
